@@ -5,7 +5,6 @@ import CommandPalette from './components/layout/CommandPalette';
 
 import DashboardPage from './pages/DashboardPage';
 import ThreatsPage from './pages/ThreatsPage';
-import LiveFetchPage from './pages/LiveFetchPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import ReportsPage from './pages/ReportsPage';
 
@@ -104,7 +103,6 @@ function MainAppShell() {
             <Route path="/" element={<DashboardPage threats={threats} metrics={metrics} onRefreshData={refreshAllData} />} />
             <Route path="/threats" element={<ThreatsPage threats={allRealThreats} metrics={metrics} onRefreshData={refreshAllData} />} />
             <Route path="/incidents" element={<ThreatsPage threats={threats} metrics={metrics} onRefreshData={refreshAllData} />} />
-            <Route path="/live-fetch" element={<LiveFetchPage threats={threats} metrics={metrics} onRefreshData={refreshAllData} />} />
             <Route path="/reports" element={<ReportsPage threats={threats} />} />
             <Route path="/analytics" element={<AnalyticsPage metrics={metrics} />} />
           </Routes>

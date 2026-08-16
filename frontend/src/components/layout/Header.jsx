@@ -1,13 +1,12 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Shield, Eye, ShieldAlert, Globe, FileText, Settings, Cpu } from 'lucide-react';
+import { Shield, Eye, ShieldAlert, FileText, Settings } from 'lucide-react';
 
 export default function Header() {
   const navItems = [
-    { to: '/', label: 'OVERVIEW', icon: Eye, end: true },
+    { to: '/', label: 'DASHBOARD', icon: Eye, end: true },
     { to: '/threats', label: 'THREATS', icon: Shield },
     { to: '/incidents', label: 'INCIDENTS', icon: ShieldAlert },
-    { to: '/live-fetch', label: 'FETCH', icon: Globe },
     { to: '/reports', label: 'REPORTS', icon: FileText },
     { to: '/analytics', label: 'SETTINGS', icon: Settings }
   ];
