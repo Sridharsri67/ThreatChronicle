@@ -7,7 +7,7 @@ import ReplayConsole from './components/replay/ReplayConsole';
 import EventTimeline from './components/timeline/EventTimeline';
 import ConflictPanel from './components/conflict/ConflictPanel';
 import AuditTimeline from './components/audit/AuditTimeline';
-import EventInjector from './components/simulation/EventInjector';
+import LiveFetchBar from './components/live/LiveFetchBar';
 import PerformancePanel from './components/dashboard/PerformancePanel';
 
 import {
@@ -116,7 +116,7 @@ export default function App() {
         />
 
         <div className="inspector-canvas">
-          <EventInjector
+          <LiveFetchBar
             onRefreshData={async () => {
               await loadThreats();
               await loadMetrics();

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Globe, Search, RefreshCw } from 'lucide-react';
+import { Globe, Search } from 'lucide-react';
 import { fetchLiveIntelligence } from '../../services/api';
 
-export default function EventInjector({ onRefreshData }) {
+export default function LiveFetchBar({ onRefreshData }) {
   const [loading, setLoading] = useState(false);
   const [liveInput, setLiveInput] = useState('');
   const [message, setMessage] = useState('');
