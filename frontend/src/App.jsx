@@ -13,6 +13,7 @@ import {
   fetchThreats,
   fetchThreatDetail,
   replayThreat,
+  fetchLiveIntelligence,
   fetchMetrics,
   fetchHealth
 } from './services/api';
@@ -46,7 +47,15 @@ function MainAppShell() {
     try {
       const data = await fetchThreats();
       if (data.success) {
-        setThreats(data.threats);
+        if (data.threats.length === 0) {
+          // Auto-seed initial live threat indicators if database is fresh
+          await fetchLiveIntelligence('185.220.101.5', 'ip');
+          await fetchLiveIntelligence('44d88612fea8a8f36de82e1278abb02f', 'hash');
+          const reFetch = await fetchThreats();
+          if (reFetch.success) setThreats(reFetch.threats);
+        } else {
+          setThreats(data.threats);
+        }
       }
     } catch (err) {
       console.error('Failed to load threats:', err);
@@ -71,6 +80,10 @@ function MainAppShell() {
     const data = await replayThreat(id);
     return data ? data.replay : null;
   };
+
+  // Real Threat & Suspicious Only Filter for Threats Queue
+  const activeThreatsList = threats.filter(t => t.decision === 'BLOCKED' || t.decision === 'SUSPICIOUS');
+  const allRealThreats = activeThreatsList.length > 0 ? activeThreatsList : threats;
 
   return (
     <div className="app-container">
@@ -97,11 +110,10 @@ function MainAppShell() {
         <div className="router-workspace">
           <Routes>
             <Route path="/" element={<DashboardPage threats={threats} metrics={metrics} />} />
-            <Route path="/threats" element={<ThreatsPage threats={threats} metrics={metrics} onRefreshData={refreshAllData} />} />
-            <Route path="/incidents" element={<ThreatsPage threats={threats.filter(t => t.decision === 'BLOCKED' || t.decision === 'SUSPICIOUS')} metrics={metrics} onRefreshData={refreshAllData} />} />
-            <Route path="/watchlist" element={<ThreatsPage threats={threats} metrics={metrics} onRefreshData={refreshAllData} />} />
+            <Route path="/threats" element={<ThreatsPage threats={allRealThreats} metrics={metrics} onRefreshData={refreshAllData} />} />
+            <Route path="/incidents" element={<ThreatsPage threats={activeThreatsList} metrics={metrics} onRefreshData={refreshAllData} />} />
             <Route path="/live-fetch" element={<LiveFetchPage threats={threats} metrics={metrics} onRefreshData={refreshAllData} />} />
-            <Route path="/reports" element={<ThreatsPage threats={threats} metrics={metrics} onRefreshData={refreshAllData} />} />
+            <Route path="/reports" element={<ThreatsPage threats={allRealThreats} metrics={metrics} onRefreshData={refreshAllData} />} />
             <Route path="/analytics" element={<AnalyticsPage metrics={metrics} />} />
           </Routes>
         </div>
