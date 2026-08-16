@@ -98,7 +98,10 @@ function MainAppShell() {
           <Routes>
             <Route path="/" element={<DashboardPage threats={threats} metrics={metrics} />} />
             <Route path="/threats" element={<ThreatsPage threats={threats} metrics={metrics} onRefreshData={refreshAllData} />} />
+            <Route path="/incidents" element={<ThreatsPage threats={threats.filter(t => t.decision === 'BLOCKED' || t.decision === 'SUSPICIOUS')} metrics={metrics} onRefreshData={refreshAllData} />} />
+            <Route path="/watchlist" element={<ThreatsPage threats={threats} metrics={metrics} onRefreshData={refreshAllData} />} />
             <Route path="/live-fetch" element={<LiveFetchPage threats={threats} metrics={metrics} onRefreshData={refreshAllData} />} />
+            <Route path="/reports" element={<ThreatsPage threats={threats} metrics={metrics} onRefreshData={refreshAllData} />} />
             <Route path="/analytics" element={<AnalyticsPage metrics={metrics} />} />
           </Routes>
         </div>

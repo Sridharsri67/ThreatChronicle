@@ -1,15 +1,15 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Shield, Eye, ShieldAlert, AlertTriangle, List, Globe, FileText, Settings } from 'lucide-react';
+import { Shield, Eye, ShieldAlert, List, Globe, FileText, Settings } from 'lucide-react';
 
 export default function SidebarNav() {
   const navItems = [
     { to: '/', label: 'Overview', icon: Eye },
     { to: '/threats', label: 'Threats', icon: Shield },
-    { to: '/threats', label: 'Incidents', icon: ShieldAlert },
-    { to: '/threats', label: 'Watchlist', icon: List },
+    { to: '/incidents', label: 'Incidents', icon: ShieldAlert },
+    { to: '/watchlist', label: 'Watchlist', icon: List },
     { to: '/live-fetch', label: 'Intelligence', icon: Globe },
-    { to: '/analytics', label: 'Reports', icon: FileText },
+    { to: '/reports', label: 'Reports', icon: FileText },
     { to: '/analytics', label: 'Settings', icon: Settings }
   ];
 
@@ -24,7 +24,7 @@ export default function SidebarNav() {
           <NavLink
             key={idx}
             to={item.to}
-            end={item.to === '/'}
+            end
             className={({ isActive }) => `sidebar-nav-item ${isActive ? 'active' : ''}`}
             title={item.label}
           >
