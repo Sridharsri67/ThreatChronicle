@@ -17,7 +17,7 @@ export default function GlobalThreatMap() {
     const latRad = (lat * Math.PI) / 180;
     const mercN = Math.log(Math.tan(Math.PI / 4 + latRad / 2));
     const y = 200 - (800 * mercN) / (2 * Math.PI);
-    return { x: Math.max(20, Math.min(780, x)), y: Math.max(30, Math.min(370, y)) };
+    return { x: Math.max(30, Math.min(770, x)), y: Math.max(30, Math.min(370, y)) };
   };
 
   // Generate SVG Bezier arc curve path string
@@ -69,25 +69,46 @@ export default function GlobalThreatMap() {
                 <feMergeNode in="SourceGraphic"/>
               </feMerge>
             </filter>
-            <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#FF2A4B" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#FF6B00" stopOpacity="0.8" />
-            </linearGradient>
           </defs>
 
-          {/* Dotted World Grid Map Projection */}
+          {/* Grid Latitude / Longitude Lines */}
+          {[80, 160, 240, 320].map(y => (
+            <line key={y} x1="0" y1={y} x2="800" y2={y} stroke="rgba(255,255,255,0.03)" strokeDasharray="4 4" />
+          ))}
+          {[160, 320, 480, 640].map(x => (
+            <line key={x} x1={x} y1="0" x2={x} y2="400" stroke="rgba(255,255,255,0.03)" strokeDasharray="4 4" />
+          ))}
+
+          {/* Full Vector World Map Continent Background Outlines */}
+          <g fill="#0F0F16" stroke="#1C1C28" strokeWidth="1">
+            {/* North America */}
+            <path d="M 60 70 Q 120 40 220 50 T 260 140 T 200 180 T 170 240 L 150 210 L 130 160 L 80 140 L 50 100 Z" />
+            {/* Greenland */}
+            <path d="M 280 30 Q 320 20 350 40 T 330 90 L 290 80 Z" />
+            {/* South America */}
+            <path d="M 210 230 Q 270 230 300 280 T 260 370 T 220 340 L 200 270 Z" />
+            {/* Europe */}
+            <path d="M 380 70 Q 450 50 510 80 T 480 150 L 410 160 L 370 120 Z" />
+            {/* Africa */}
+            <path d="M 380 170 Q 480 160 520 210 T 480 340 L 420 320 L 370 230 Z" />
+            {/* Asia */}
+            <path d="M 500 70 Q 640 40 760 80 T 780 200 L 710 230 L 620 220 L 520 160 Z" />
+            {/* Australia */}
+            <path d="M 660 270 Q 750 260 770 310 T 730 370 L 650 340 Z" />
+          </g>
+
+          {/* High-Density Dotted Matrix Overlay */}
           {Array.from({ length: 40 }).map((_, row) =>
             Array.from({ length: 80 }).map((_, col) => {
               const x = col * 10;
               const y = row * 10;
-              // Filter dots roughly in landmass bounds
               const isLand =
-                (x > 100 && x < 260 && y > 60 && y < 220) || // North America
-                (x > 180 && x < 280 && y > 220 && y < 350) || // South America
-                (x > 380 && x < 520 && y > 50 && y < 160) || // Europe
-                (x > 370 && x < 500 && y > 160 && y < 320) || // Africa
-                (x > 500 && x < 750 && y > 50 && y < 240) || // Asia
-                (x > 640 && x < 760 && y > 250 && y < 350); // Australia
+                (x > 50 && x < 270 && y > 40 && y < 240) || // NA
+                (x > 190 && x < 310 && y > 220 && y < 370) || // SA
+                (x > 370 && x < 520 && y > 50 && y < 160) || // EU
+                (x > 360 && x < 520 && y > 160 && y < 340) || // AF
+                (x > 500 && x < 780 && y > 40 && y < 240) || // ASIA
+                (x > 640 && x < 780 && y > 250 && y < 370); // AU
 
               if (!isLand || (row + col) % 2 !== 0) return null;
               return (
@@ -95,9 +116,9 @@ export default function GlobalThreatMap() {
                   key={`${row}-${col}`}
                   cx={x}
                   cy={y}
-                  r="1"
-                  fill="#2A2A38"
-                  opacity="0.6"
+                  r="1.2"
+                  fill="#2A2A3D"
+                  opacity="0.7"
                 />
               );
             })
@@ -139,7 +160,7 @@ export default function GlobalThreatMap() {
                     <animate attributeName="r" values="3;12;3" dur="2s" repeatCount="indefinite" />
                     <animate attributeName="opacity" values="0.6;0;0.6" dur="2s" repeatCount="indefinite" />
                   </circle>
-                  <circle r="3" fill={d.color} />
+                  <circle r="3.5" fill={d.color} />
                   <text y="-7" textAnchor="middle" fill="#C4C4D0" fontSize="8" fontFamily="Fira Code" fontWeight="600">
                     {d.start.label}
                   </text>
@@ -151,7 +172,7 @@ export default function GlobalThreatMap() {
                     <animate attributeName="r" values="3;12;3" dur="2.5s" repeatCount="indefinite" />
                     <animate attributeName="opacity" values="0.6;0;0.6" dur="2.5s" repeatCount="indefinite" />
                   </circle>
-                  <circle r="3" fill="#FFFFFF" />
+                  <circle r="3.5" fill="#FFFFFF" />
                   <text y="-7" textAnchor="middle" fill="#FFFFFF" fontSize="8" fontFamily="Fira Code" fontWeight="700">
                     {d.end.label}
                   </text>
