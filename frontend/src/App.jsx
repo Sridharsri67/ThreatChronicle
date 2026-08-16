@@ -14,7 +14,6 @@ import {
   fetchThreats,
   fetchThreatDetail,
   replayThreat,
-  loadFixture,
   fetchMetrics,
   fetchHealth
 } from './services/api';
@@ -52,9 +51,6 @@ export default function App() {
         setThreats(data.threats);
         if (data.threats.length > 0 && !selectedThreatId) {
           setSelectedThreatId(data.threats[0].threatId);
-        } else if (data.threats.length === 0) {
-          // Auto-seed fixtures if database is empty
-          await handleLoadFixture('all');
         }
       }
     } catch (err) {
@@ -95,16 +91,6 @@ export default function App() {
     return data ? data.replay : null;
   };
 
-  const handleLoadFixture = async (fixtureName) => {
-    const data = await loadFixture(fixtureName);
-    await loadThreats();
-    await loadMetrics();
-    if (selectedThreatId) {
-      await loadThreatDetail(selectedThreatId);
-    }
-    return data;
-  };
-
   return (
     <div className="app-container">
       <Header
@@ -119,7 +105,6 @@ export default function App() {
         onClose={() => setIsCmdOpen(false)}
         threats={threats}
         onSelectThreat={handleSelectThreat}
-        onLoadFixture={handleLoadFixture}
         onRunReplay={handleRunReplay}
       />
 
@@ -132,7 +117,6 @@ export default function App() {
 
         <div className="inspector-canvas">
           <EventInjector
-            onLoadFixture={handleLoadFixture}
             onRefreshData={async () => {
               await loadThreats();
               await loadMetrics();
@@ -161,7 +145,7 @@ export default function App() {
             </>
           ) : (
             <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-              No threat selected. Choose a threat from the investigation queue to inspect state reconstruction and replay verification.
+              No threat selected. Choose a threat from the investigation queue or fetch live intelligence above.
             </div>
           )}
         </div>

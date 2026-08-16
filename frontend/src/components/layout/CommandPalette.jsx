@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, Play, Zap, Shield, Filter, FileText, X } from 'lucide-react';
+import { Search, Shield } from 'lucide-react';
 
-export default function CommandPalette({ isOpen, onClose, threats, onSelectThreat, onLoadFixture, onRunReplay }) {
+export default function CommandPalette({ isOpen, onClose, threats, onSelectThreat }) {
   const [query, setQuery] = useState('');
 
   useEffect(() => {
@@ -26,13 +26,6 @@ export default function CommandPalette({ isOpen, onClose, threats, onSelectThrea
     t.decision.toLowerCase().includes(query.toLowerCase())
   );
 
-  const actions = [
-    { id: 'act_load_all', name: 'Load All Edge-Case Fixtures', icon: Zap, action: () => { onLoadFixture('all'); onClose(); } },
-    { id: 'act_load_conflict', name: 'Load Multi-Source Conflict Fixture', icon: Zap, action: () => { onLoadFixture('conflict'); onClose(); } },
-    { id: 'act_load_late', name: 'Load Historical Late-Event Fixture', icon: Zap, action: () => { onLoadFixture('late-event'); onClose(); } },
-    { id: 'act_load_dup', name: 'Load Duplicate Payload Fixture', icon: Zap, action: () => { onLoadFixture('duplicate'); onClose(); } }
-  ];
-
   return (
     <AnimatePresence>
       <div className="cmd-backdrop" onClick={onClose}>
@@ -49,7 +42,7 @@ export default function CommandPalette({ isOpen, onClose, threats, onSelectThrea
             <input
               type="text"
               className="cmd-input"
-              placeholder="Search threat ID, IP, domain, hash, or action..."
+              placeholder="Search threat ID, IP, domain, or hash..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               autoFocus
@@ -58,26 +51,8 @@ export default function CommandPalette({ isOpen, onClose, threats, onSelectThrea
           </div>
 
           <div className="cmd-list">
-            {/* Action Items */}
-            {query === '' && (
-              <div style={{ padding: '0.4rem 0.75rem', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.08em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-                Quick Actions
-              </div>
-            )}
-
-            {query === '' && actions.map(act => (
-              <div key={act.id} className="cmd-item" onClick={act.action}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <act.icon size={14} style={{ color: 'var(--text-secondary)' }} />
-                  <span>{act.name}</span>
-                </div>
-                <span className="mono" style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>ACTION</span>
-              </div>
-            ))}
-
-            {/* Threats Listing */}
-            <div style={{ padding: '0.4rem 0.75rem', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.08em', color: 'var(--text-muted)', textTransform: 'uppercase', marginTop: '0.4rem' }}>
-              Threats ({filteredThreats.length})
+            <div style={{ padding: '0.4rem 0.75rem', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.08em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+              Active Threat Queue ({filteredThreats.length})
             </div>
 
             {filteredThreats.map(t => (

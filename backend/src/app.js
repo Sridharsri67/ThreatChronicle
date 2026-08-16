@@ -3,8 +3,6 @@ const cors = require('cors');
 
 const eventRoutes = require('./routes/event.routes');
 const threatRoutes = require('./routes/threat.routes');
-const replayRoutes = require('./routes/replay.routes');
-const fixtureRoutes = require('./routes/fixture.routes');
 const metricsRoutes = require('./routes/metrics.routes');
 
 const app = express();
@@ -16,8 +14,6 @@ app.use(express.urlencoded({ extended: true }));
 // API Routes
 app.use('/api/events', eventRoutes);
 app.use('/api/threats', threatRoutes);
-app.use('/api/threats', replayRoutes);
-app.use('/api/fixtures', fixtureRoutes);
 app.use('/api', metricsRoutes);
 
 // Global Error Handler

@@ -35,16 +35,6 @@ export async function replayThreat(id) {
   return await res.json();
 }
 
-export async function loadFixture(name = 'all') {
-  const res = await fetch(`${BASE_URL}/fixtures/load`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name })
-  });
-  if (!res.ok) throw new Error(`HTTP error ${res.status}: Failed to load fixture '${name}'`);
-  return await res.json();
-}
-
 export async function fetchLiveIntelligence(value, type = 'ip') {
   const res = await fetch(`${BASE_URL}/events/fetch-live`, {
     method: 'POST',

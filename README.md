@@ -305,7 +305,6 @@ ThreatChronicle/
 - `POST /api/threats/:id/replay` — Execute deterministic replay verification & check SHA-256 checksums.
 
 ### Fixtures & Metrics
-- `POST /api/fixtures/load` — Load preset test fixture streams (`conflict`, `late-event`, `duplicate`, `all`).
 - `GET /api/metrics` — Retrieve engine throughput and operational health statistics.
 
 ---

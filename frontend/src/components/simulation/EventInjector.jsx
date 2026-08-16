@@ -1,36 +1,11 @@
 import React, { useState } from 'react';
-import { Zap, Globe, Search, RefreshCw } from 'lucide-react';
+import { Globe, Search, RefreshCw } from 'lucide-react';
 import { fetchLiveIntelligence } from '../../services/api';
 
-export default function EventInjector({ onLoadFixture, onRefreshData }) {
+export default function EventInjector({ onRefreshData }) {
   const [loading, setLoading] = useState(false);
   const [liveInput, setLiveInput] = useState('');
   const [message, setMessage] = useState('');
-
-  const fixtures = [
-    { name: 'conflict', label: 'CONFLICT' },
-    { name: 'late-event', label: 'LATE EVENT' },
-    { name: 'duplicate', label: 'DUPLICATE' },
-    { name: 'invalidation', label: 'CLEAN INVALIDATION' },
-    { name: 'out-of-order', label: 'OUT OF ORDER' },
-    { name: 'same-timestamp', label: 'SAME TIMESTAMP' },
-    { name: 'ai-report', label: 'AI REPORT' },
-    { name: 'mixed-incident', label: 'MIXED INCIDENT' },
-    { name: 'all', label: 'LOAD ALL FIXTURES' }
-  ];
-
-  const handleRunFixture = async (fixtureName) => {
-    setLoading(true);
-    setMessage('');
-    try {
-      const res = await onLoadFixture(fixtureName);
-      setMessage(`Loaded '${fixtureName}' (${res.totalEventsProcessed || res.results.length} events processed)`);
-    } catch (err) {
-      setMessage(`Error: ${err.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleLiveFetch = async (e) => {
     e.preventDefault();
@@ -41,8 +16,13 @@ export default function EventInjector({ onLoadFixture, onRefreshData }) {
     try {
       const val = liveInput.trim();
       let type = 'ip';
-      if (val.includes('.')) type = 'domain';
-      else if (/^[a-f0-9]{32,64}$/i.test(val)) type = 'hash';
+      if (/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(val)) {
+        type = 'ip';
+      } else if (/^[a-f0-9]{32,64}$/i.test(val)) {
+        type = 'hash';
+      } else if (val.includes('.')) {
+        type = 'domain';
+      }
 
       const res = await fetchLiveIntelligence(val, type);
       if (res.success) {
@@ -59,57 +39,38 @@ export default function EventInjector({ onLoadFixture, onRefreshData }) {
   };
 
   return (
-    <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '1rem', marginBottom: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-      {/* Live External API Fetch Bar */}
+    <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '1rem', marginBottom: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>
+          <Globe size={14} style={{ color: 'var(--status-clean)' }} />
+          <span>LIVE THREAT INTELLIGENCE FETCH (VT / OTX / SHODAN)</span>
+        </div>
+        {message && (
+          <span className="mono" style={{ fontSize: '0.7rem', color: 'var(--status-clean)' }}>
+            {message}
+          </span>
+        )}
+      </div>
+
       <form onSubmit={handleLiveFetch} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', background: 'var(--bg-darkest)', border: '1px solid var(--border-medium)', borderRadius: '6px', padding: '0.4rem 0.65rem' }}>
-        <Globe size={14} style={{ color: 'var(--status-clean)' }} />
-        <span className="mono" style={{ fontSize: '0.72rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>LIVE INTELLIGENCE (VT / OTX / SHODAN):</span>
+        <Search size={14} style={{ color: 'var(--text-muted)' }} />
         <input
           type="text"
           className="mono"
-          placeholder="Enter IP, domain, hash (e.g. 8.8.8.8, 1.1.1.1)..."
+          placeholder="Enter any IP, Domain, or Hash to query live APIs (e.g. 8.8.8.8, 1.1.1.1, example.com)..."
           value={liveInput}
           onChange={(e) => setLiveInput(e.target.value)}
-          style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: 'var(--text-white)', fontSize: '0.8rem' }}
+          style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: 'var(--text-white)', fontSize: '0.82rem' }}
         />
         <button
           type="submit"
           className="sim-card-btn"
           disabled={loading || !liveInput.trim()}
-          style={{ background: 'var(--text-white)', color: '#000', border: 'none', fontWeight: 700, padding: '0.35rem 0.75rem' }}
+          style={{ background: 'var(--text-white)', color: '#000', border: 'none', fontWeight: 700, padding: '0.4rem 0.85rem', cursor: 'pointer' }}
         >
           {loading ? 'FETCHING APIS...' : 'FETCH LIVE API DATA'}
         </button>
       </form>
-
-      {/* Preset Fixture Bar */}
-      <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>
-            <Zap size={13} />
-            <span>LOCAL FIXTURE SIMULATOR</span>
-          </div>
-          {message && (
-            <span className="mono" style={{ fontSize: '0.7rem', color: 'var(--status-clean)' }}>
-              {message}
-            </span>
-          )}
-        </div>
-
-        <div className="sim-grid">
-          {fixtures.map(f => (
-            <button
-              key={f.name}
-              className="sim-card-btn"
-              onClick={() => handleRunFixture(f.name)}
-              disabled={loading}
-              style={f.name === 'all' ? { border: '1px solid var(--border-medium)', color: 'var(--text-white)' } : {}}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
