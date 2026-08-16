@@ -1,0 +1,30 @@
+[
+  {
+    "eventId": "evt_tie_002",
+    "source": "ai_report",
+    "timestamp": "2026-08-16T15:00:00.000Z",
+    "type": "report",
+    "threatId": "hash_e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "indicator": {
+      "type": "hash",
+      "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "threatLevel": "high",
+    "confidence": 0.90,
+    "data": { "engine": "AI Threat Classifier" }
+  },
+  {
+    "eventId": "evt_tie_001",
+    "source": "alienvault",
+    "timestamp": "2026-08-16T15:00:00.000Z",
+    "type": "ioc",
+    "threatId": "hash_e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "indicator": {
+      "type": "hash",
+      "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "threatLevel": "high",
+    "confidence": 0.85,
+    "data": { "feed": "AlienVault OTX Malicious Hashes" }
+  }
+]

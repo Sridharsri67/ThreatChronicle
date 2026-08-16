@@ -1,0 +1,24 @@
+{
+  "name": "threatchronicle-backend",
+  "version": "1.0.0",
+  "description": "Deterministic Real-Time Threat Correlation & Replay Engine Backend",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "jest --runInBand --detectOpenHandles",
+    "test:benchmark": "jest tests/integration/benchmark.test.js --runInBand"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-validator": "^7.1.0",
+    "mongoose": "^8.4.1",
+    "pdfkit": "^0.19.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
+  }
+}

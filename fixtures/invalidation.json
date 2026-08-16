@@ -1,0 +1,24 @@
+[
+  {
+    "eventId": "evt_inv_001",
+    "source": "ai_report",
+    "timestamp": "2026-08-16T09:00:00.000Z",
+    "type": "report",
+    "threatId": "ip_192.0.2.1",
+    "indicator": { "type": "ip", "value": "192.0.2.1" },
+    "threatLevel": "high",
+    "confidence": 0.75,
+    "data": { "reason": "Suspected brute force source" }
+  },
+  {
+    "eventId": "evt_inv_002",
+    "source": "alienvault",
+    "timestamp": "2026-08-16T11:00:00.000Z",
+    "type": "whitelisting_update",
+    "threatId": "ip_192.0.2.1",
+    "indicator": { "type": "ip", "value": "192.0.2.1" },
+    "threatLevel": "clean",
+    "confidence": 0.95,
+    "data": { "reason": "Verified benign CDN egress node", "whitelist": true }
+  }
+]

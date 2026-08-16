@@ -1,0 +1,17 @@
+{
+  "eventId": "evt_dup_001",
+  "source": "alienvault",
+  "timestamp": "2026-08-16T08:00:00.000Z",
+  "type": "ioc",
+  "threatId": "ip_198.51.100.42",
+  "indicator": {
+    "type": "ip",
+    "value": "198.51.100.42"
+  },
+  "threatLevel": "high",
+  "confidence": 0.85,
+  "data": {
+    "description": "Known Command & Control server detected in alienvault feed",
+    "pulse_id": "pulse_c2_99"
+  }
+}

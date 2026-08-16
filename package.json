@@ -1,0 +1,22 @@
+{
+  "name": "threatchronicle",
+  "version": "1.0.0",
+  "description": "ThreatChronicle — Deterministic Real-Time Threat Correlation & Replay Engine",
+  "scripts": {
+    "start:backend": "npm --prefix backend start",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "test": "npm --prefix backend test",
+    "test:benchmark": "npm --prefix backend run test:benchmark"
+  },
+  "keywords": [
+    "cybersecurity",
+    "threat-intelligence",
+    "event-correlation",
+    "replay-engine",
+    "determinism",
+    "auditability"
+  ],
+  "author": "",
+  "license": "ISC"
+}
