@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import Header from './components/layout/Header';
 import CommandPalette from './components/layout/CommandPalette';
-import ThreatList from './components/threats/ThreatList';
-import DecisionHero from './components/decision/DecisionHero';
-import ReplayConsole from './components/replay/ReplayConsole';
-import EventTimeline from './components/timeline/EventTimeline';
-import ConflictPanel from './components/conflict/ConflictPanel';
-import AuditTimeline from './components/audit/AuditTimeline';
-import LiveFetchBar from './components/live/LiveFetchBar';
-import PerformancePanel from './components/dashboard/PerformancePanel';
+
+import DashboardPage from './pages/DashboardPage';
+import ThreatsPage from './pages/ThreatsPage';
+import LiveFetchPage from './pages/LiveFetchPage';
+import AnalyticsPage from './pages/AnalyticsPage';
 
 import {
   fetchThreats,
@@ -18,10 +16,9 @@ import {
   fetchHealth
 } from './services/api';
 
-export default function App() {
+function MainAppShell() {
+  const navigate = useNavigate();
   const [threats, setThreats] = useState([]);
-  const [selectedThreatId, setSelectedThreatId] = useState(null);
-  const [selectedThreatData, setSelectedThreatData] = useState(null);
   const [metrics, setMetrics] = useState(null);
   const [health, setHealth] = useState(null);
   const [isCmdOpen, setIsCmdOpen] = useState(false);
@@ -49,41 +46,24 @@ export default function App() {
       const data = await fetchThreats();
       if (data.success) {
         setThreats(data.threats);
-        if (data.threats.length > 0 && !selectedThreatId) {
-          setSelectedThreatId(data.threats[0].threatId);
-        }
       }
     } catch (err) {
       console.error('Failed to load threats:', err);
     }
   };
 
-  const loadThreatDetail = async (id) => {
-    if (!id) return;
-    try {
-      const data = await fetchThreatDetail(id);
-      if (data.success) {
-        setSelectedThreatData(data.threat);
-      }
-    } catch (err) {
-      console.error(`Failed to load threat detail for ${id}:`, err);
-    }
+  const refreshAllData = async () => {
+    await loadThreats();
+    await loadMetrics();
+    await loadHealth();
   };
 
   useEffect(() => {
-    loadMetrics();
-    loadHealth();
-    loadThreats();
+    refreshAllData();
   }, []);
 
-  useEffect(() => {
-    if (selectedThreatId) {
-      loadThreatDetail(selectedThreatId);
-    }
-  }, [selectedThreatId]);
-
   const handleSelectThreat = (id) => {
-    setSelectedThreatId(id);
+    navigate(`/threats?id=${encodeURIComponent(id)}`);
   };
 
   const handleRunReplay = async (id) => {
@@ -97,7 +77,7 @@ export default function App() {
         metrics={metrics}
         health={health}
         onOpenCommand={() => setIsCmdOpen(true)}
-        onRefresh={() => { loadMetrics(); loadThreats(); }}
+        onRefresh={refreshAllData}
       />
 
       <CommandPalette
@@ -108,48 +88,22 @@ export default function App() {
         onRunReplay={handleRunReplay}
       />
 
-      <main className="main-workspace">
-        <ThreatList
-          threats={threats}
-          selectedThreatId={selectedThreatId}
-          onSelectThreat={handleSelectThreat}
-        />
-
-        <div className="inspector-canvas">
-          <LiveFetchBar
-            onRefreshData={async () => {
-              await loadThreats();
-              await loadMetrics();
-              if (selectedThreatId) await loadThreatDetail(selectedThreatId);
-            }}
-          />
-
-          {selectedThreatData ? (
-            <>
-              <DecisionHero threat={selectedThreatData} />
-
-              <ReplayConsole
-                threatId={selectedThreatData.threatId}
-                onRunReplay={handleRunReplay}
-              />
-
-              <EventTimeline events={selectedThreatData.rawEvents} />
-
-              {selectedThreatData.audits && selectedThreatData.audits.length > 0 && selectedThreatData.audits[selectedThreatData.audits.length - 1].resolutionSteps && (
-                <ConflictPanel steps={selectedThreatData.audits[selectedThreatData.audits.length - 1].resolutionSteps} />
-              )}
-
-              <AuditTimeline audits={selectedThreatData.audits} />
-
-              <PerformancePanel metrics={metrics} />
-            </>
-          ) : (
-            <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-              No threat selected. Choose a threat from the investigation queue or fetch live intelligence above.
-            </div>
-          )}
-        </div>
-      </main>
+      <div className="router-workspace">
+        <Routes>
+          <Route path="/" element={<DashboardPage threats={threats} metrics={metrics} />} />
+          <Route path="/threats" element={<ThreatsPage threats={threats} metrics={metrics} onRefreshData={refreshAllData} />} />
+          <Route path="/live-fetch" element={<LiveFetchPage threats={threats} metrics={metrics} onRefreshData={refreshAllData} />} />
+          <Route path="/analytics" element={<AnalyticsPage metrics={metrics} />} />
+        </Routes>
+      </div>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <MainAppShell />
+    </BrowserRouter>
   );
 }
