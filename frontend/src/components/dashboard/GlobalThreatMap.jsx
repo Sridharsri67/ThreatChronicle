@@ -1,23 +1,33 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Globe, Maximize2, Filter, MoreHorizontal } from 'lucide-react';
+import { Globe, Maximize2 } from 'lucide-react';
 
 export default function GlobalThreatMap() {
-  const nodes = [
-    { id: 'us-east', name: 'US-East (Virginia)', cx: 220, cy: 140, severity: 'critical' },
-    { id: 'eu-central', name: 'EU-Central (Frankfurt)', cx: 480, cy: 120, severity: 'high' },
-    { id: 'ap-east', name: 'AP-East (Tokyo)', cx: 780, cy: 160, severity: 'high' },
-    { id: 'ap-southeast', name: 'AP-Southeast (Singapore)', cx: 710, cy: 230, severity: 'medium' },
-    { id: 'sa-east', name: 'SA-East (São Paulo)', cx: 330, cy: 280, severity: 'critical' },
-    { id: 'au-southeast', name: 'AU-East (Sydney)', cx: 820, cy: 300, severity: 'low' }
+  const dots = [
+    { start: { lat: 37.7749, lng: -122.4194, label: "San Francisco" }, end: { lat: 51.5074, lng: -0.1278, label: "London" }, color: "#FF2A4B" },
+    { start: { lat: 40.7128, lng: -74.006, label: "New York" }, end: { lat: 35.6762, lng: 139.6503, label: "Tokyo" }, color: "#FF6B00" },
+    { start: { lat: -23.5505, lng: -46.6333, label: "São Paulo" }, end: { lat: 50.1109, lng: 8.6821, label: "Frankfurt" }, color: "#FF2A4B" },
+    { start: { lat: 1.3521, lng: 103.8198, label: "Singapore" }, end: { lat: -33.8688, lng: 151.2093, label: "Sydney" }, color: "#FFA800" },
+    { start: { lat: 55.7558, lng: 37.6173, label: "Moscow" }, end: { lat: 22.3193, lng: 114.1694, label: "Hong Kong" }, color: "#FF2A4B" }
   ];
 
-  const arcs = [
-    { from: [480, 120], to: [220, 140], color: '#FF2A4B' },
-    { from: [780, 160], to: [220, 140], color: '#FF6B00' },
-    { from: [330, 280], to: [480, 120], color: '#FF2A4B' },
-    { from: [710, 230], to: [820, 300], color: '#FFA800' }
-  ];
+  // Convert lat/lng coordinates into SVG canvas (x, y) coordinates (800x400 viewBox)
+  const project = (lat, lng) => {
+    const x = (lng + 180) * (800 / 360);
+    const latRad = (lat * Math.PI) / 180;
+    const mercN = Math.log(Math.tan(Math.PI / 4 + latRad / 2));
+    const y = 200 - (800 * mercN) / (2 * Math.PI);
+    return { x: Math.max(20, Math.min(780, x)), y: Math.max(30, Math.min(370, y)) };
+  };
+
+  // Generate SVG Bezier arc curve path string
+  const createArc = (start, end) => {
+    const p1 = project(start.lat, start.lng);
+    const p2 = project(end.lat, end.lng);
+    const midX = (p1.x + p2.x) / 2;
+    const midY = Math.min(p1.y, p2.y) - Math.abs(p1.x - p2.x) * 0.25;
+    return { path: `M ${p1.x} ${p1.y} Q ${midX} ${midY} ${p2.x} ${p2.y}`, p1, p2 };
+  };
 
   return (
     <div className="map-card">
@@ -50,60 +60,102 @@ export default function GlobalThreatMap() {
       </div>
 
       <div className="map-svg-container">
-        <svg viewBox="0 0 960 400" style={{ width: '100%', height: '100%' }}>
-          {/* Subtle World Map Grid Outlines */}
+        <svg viewBox="0 0 800 400" style={{ width: '100%', height: '100%' }}>
           <defs>
-            <radialGradient id="mapGlow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#FF2A4B" stopOpacity="0.15" />
-              <stop offset="100%" stopColor="#000000" stopOpacity="0" />
-            </radialGradient>
-            <filter id="glow">
-              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <filter id="glowArc">
+              <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
               <feMerge>
                 <feMergeNode in="coloredBlur"/>
                 <feMergeNode in="SourceGraphic"/>
               </feMerge>
             </filter>
+            <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#FF2A4B" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#FF6B00" stopOpacity="0.8" />
+            </linearGradient>
           </defs>
 
-          {/* Continents Vector Outlines */}
-          <path
-            d="M 120 100 Q 180 80 260 120 T 320 220 T 260 310 Q 180 340 140 260 Z M 440 90 Q 520 70 600 110 T 640 220 Q 560 260 480 220 Z M 680 130 Q 760 100 840 140 T 880 250 T 780 330 Q 700 300 680 220 Z M 760 280 Q 820 260 880 290 T 860 360 Z"
-            fill="#0E0E14"
-            stroke="#1E1E2A"
-            strokeWidth="1"
-          />
+          {/* Dotted World Grid Map Projection */}
+          {Array.from({ length: 40 }).map((_, row) =>
+            Array.from({ length: 80 }).map((_, col) => {
+              const x = col * 10;
+              const y = row * 10;
+              // Filter dots roughly in landmass bounds
+              const isLand =
+                (x > 100 && x < 260 && y > 60 && y < 220) || // North America
+                (x > 180 && x < 280 && y > 220 && y < 350) || // South America
+                (x > 380 && x < 520 && y > 50 && y < 160) || // Europe
+                (x > 370 && x < 500 && y > 160 && y < 320) || // Africa
+                (x > 500 && x < 750 && y > 50 && y < 240) || // Asia
+                (x > 640 && x < 760 && y > 250 && y < 350); // Australia
 
-          {/* Grid Lines */}
-          {[100, 200, 300].map(y => (
-            <line key={y} x1="0" y1={y} x2="960" y2={y} stroke="rgba(255,255,255,0.03)" strokeDasharray="3 3" />
-          ))}
-          {[200, 400, 600, 800].map(x => (
-            <line key={x} x1={x} y1="0" x2={x} y2="400" stroke="rgba(255,255,255,0.03)" strokeDasharray="3 3" />
-          ))}
+              if (!isLand || (row + col) % 2 !== 0) return null;
+              return (
+                <circle
+                  key={`${row}-${col}`}
+                  cx={x}
+                  cy={y}
+                  r="1"
+                  fill="#2A2A38"
+                  opacity="0.6"
+                />
+              );
+            })
+          )}
 
-          {/* Glowing Attack Trajectory Arcs */}
-          {arcs.map((arc, idx) => {
-            const midX = (arc.from[0] + arc.to[0]) / 2;
-            const midY = Math.min(arc.from[1], arc.to[1]) - 50;
-            const pathD = `M ${arc.from[0]} ${arc.from[1]} Q ${midX} ${midY} ${arc.to[0]} ${arc.to[1]}`;
+          {/* Animated Arc Lines (Aceternity UI Style) */}
+          {dots.map((d, i) => {
+            const { path, p1, p2 } = createArc(d.start, d.end);
             return (
-              <g key={idx}>
-                <path d={pathD} fill="none" stroke={arc.color} strokeWidth="1.5" strokeDasharray="4 4" opacity="0.8" filter="url(#glow)" />
-                <circle cx={midX} cy={midY} r="3" fill={arc.color} />
-              </g>
-            );
-          })}
+              <g key={i}>
+                {/* Arc Track */}
+                <path
+                  d={path}
+                  fill="none"
+                  stroke="rgba(255, 255, 255, 0.08)"
+                  strokeWidth="1.5"
+                />
 
-          {/* Pulsing Node Origin Points */}
-          {nodes.map(node => {
-            const color = node.severity === 'critical' ? '#FF2A4B' : node.severity === 'high' ? '#FF6B00' : node.severity === 'medium' ? '#FFA800' : '#00E676';
-            return (
-              <g key={node.id}>
-                <circle cx={node.cx} cy={node.cy} r="12" fill={color} opacity="0.15" />
-                <circle cx={node.cx} cy={node.cy} r="6" fill={color} opacity="0.4" />
-                <circle cx={node.cx} cy={node.cy} r="3" fill="#FFFFFF" />
-                <text x={node.cx + 8} y={node.cy + 3} fill="#A3A3A3" fontSize="9" fontFamily="Fira Code">{node.name}</text>
+                {/* Animated Arc Pulse Path */}
+                <motion.path
+                  d={path}
+                  fill="none"
+                  stroke={d.color}
+                  strokeWidth="2"
+                  filter="url(#glowArc)"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: [0, 1, 1], opacity: [0, 1, 0] }}
+                  transition={{
+                    duration: 3 + i * 0.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: i * 0.6
+                  }}
+                />
+
+                {/* Origin Location Point & Pulsing Ring */}
+                <g transform={`translate(${p1.x}, ${p1.y})`}>
+                  <circle r="8" fill={d.color} opacity="0.2">
+                    <animate attributeName="r" values="3;12;3" dur="2s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.6;0;0.6" dur="2s" repeatCount="indefinite" />
+                  </circle>
+                  <circle r="3" fill={d.color} />
+                  <text y="-7" textAnchor="middle" fill="#C4C4D0" fontSize="8" fontFamily="Fira Code" fontWeight="600">
+                    {d.start.label}
+                  </text>
+                </g>
+
+                {/* Target Location Point & Pulsing Ring */}
+                <g transform={`translate(${p2.x}, ${p2.y})`}>
+                  <circle r="8" fill={d.color} opacity="0.2">
+                    <animate attributeName="r" values="3;12;3" dur="2.5s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.6;0;0.6" dur="2.5s" repeatCount="indefinite" />
+                  </circle>
+                  <circle r="3" fill="#FFFFFF" />
+                  <text y="-7" textAnchor="middle" fill="#FFFFFF" fontSize="8" fontFamily="Fira Code" fontWeight="700">
+                    {d.end.label}
+                  </text>
+                </g>
               </g>
             );
           })}
