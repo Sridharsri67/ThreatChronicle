@@ -87,16 +87,7 @@ body {
 
 /* Vertical Icon Navigation Sidebar */
 .soc-sidebar {
-  width: 72px;
-  background: #08080c;
-  border-right: 1px solid var(--border-subtle);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 1.2rem 0;
-  gap: 1.5rem;
-  z-index: 60;
-  flex-shrink: 0;
+  display: none !important;
 }
 
 .brand-shield-logo {
