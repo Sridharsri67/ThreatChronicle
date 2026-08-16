@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
-import SidebarNav from './components/layout/SidebarNav';
 import Header from './components/layout/Header';
 import CommandPalette from './components/layout/CommandPalette';
 
@@ -8,6 +7,7 @@ import DashboardPage from './pages/DashboardPage';
 import ThreatsPage from './pages/ThreatsPage';
 import LiveFetchPage from './pages/LiveFetchPage';
 import AnalyticsPage from './pages/AnalyticsPage';
+import ReportsPage from './pages/ReportsPage';
 
 import {
   fetchThreats,
@@ -73,7 +73,7 @@ function MainAppShell() {
   }, []);
 
   const handleSelectThreat = (id) => {
-    navigate(`/threats?id=${encodeURIComponent(id)}`);
+    navigate(`/incidents?id=${encodeURIComponent(id)}`);
   };
 
   const handleRunReplay = async (id) => {
@@ -87,17 +87,9 @@ function MainAppShell() {
 
   return (
     <div className="app-container">
-      {/* Left Icon Navigation Sidebar */}
-      <SidebarNav />
-
-      {/* Main Content Area */}
+      {/* Main Content Area (No Left Sidebar) */}
       <div className="soc-body-container">
-        <Header
-          metrics={metrics}
-          health={health}
-          onOpenCommand={() => setIsCmdOpen(true)}
-          onRefresh={refreshAllData}
-        />
+        <Header />
 
         <CommandPalette
           isOpen={isCmdOpen}
@@ -109,11 +101,11 @@ function MainAppShell() {
 
         <div className="router-workspace">
           <Routes>
-            <Route path="/" element={<DashboardPage threats={threats} metrics={metrics} />} />
+            <Route path="/" element={<DashboardPage threats={threats} metrics={metrics} onRefreshData={refreshAllData} />} />
             <Route path="/threats" element={<ThreatsPage threats={allRealThreats} metrics={metrics} onRefreshData={refreshAllData} />} />
             <Route path="/incidents" element={<ThreatsPage threats={threats} metrics={metrics} onRefreshData={refreshAllData} />} />
             <Route path="/live-fetch" element={<LiveFetchPage threats={threats} metrics={metrics} onRefreshData={refreshAllData} />} />
-            <Route path="/reports" element={<ThreatsPage threats={allRealThreats} metrics={metrics} onRefreshData={refreshAllData} />} />
+            <Route path="/reports" element={<ReportsPage threats={threats} />} />
             <Route path="/analytics" element={<AnalyticsPage metrics={metrics} />} />
           </Routes>
         </div>

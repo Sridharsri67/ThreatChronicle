@@ -130,6 +130,17 @@ body {
   position: relative;
 }
 
+.sidebar-nav-item span {
+  font-size: 0.54rem;
+  line-height: 1;
+  max-width: 42px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+  margin-top: 2px;
+}
+
 .sidebar-nav-item:hover {
   color: var(--text-white);
   background: var(--bg-hover);
@@ -144,9 +155,9 @@ body {
 .sidebar-nav-item.active::before {
   content: '';
   position: absolute;
-  left: -14px;
-  top: 10px;
-  bottom: 10px;
+  left: -10px;
+  top: 8px;
+  bottom: 8px;
   width: 3px;
   background: var(--crimson-accent);
   border-radius: 0 2px 2px 0;
@@ -384,11 +395,19 @@ body {
 
 .map-svg-container {
   width: 100%;
-  height: 380px;
+  flex: 1;
+  min-height: 360px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.map-svg-container > div,
+.map-svg-container svg {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
 }
 
 /* Severity & AI Widgets Stack */

@@ -35,6 +35,22 @@ export async function replayThreat(id) {
   return await res.json();
 }
 
+export async function downloadReport(id, format = 'pdf') {
+  if (!id) return;
+  const res = await fetch(`${BASE_URL}/threats/${encodeURIComponent(id)}/report?format=${format}`);
+  if (!res.ok) throw new Error(`HTTP error ${res.status}: Failed to download ${format} report for ${id}`);
+  
+  const blob = await res.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `threat-report-${id.replace(/[^a-zA-Z0-9_-]/g, '_')}.${format}`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(url);
+}
+
 export async function fetchLiveIntelligence(value, type = 'ip') {
   const res = await fetch(`${BASE_URL}/events/fetch-live`, {
     method: 'POST',

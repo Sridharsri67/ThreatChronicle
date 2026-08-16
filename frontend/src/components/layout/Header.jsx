@@ -1,69 +1,58 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Search, RefreshCw, LayoutDashboard, Shield, Globe, Cpu } from 'lucide-react';
+import { Shield, Eye, ShieldAlert, Globe, FileText, Settings, Cpu } from 'lucide-react';
 
-export default function Header({ metrics, health, onOpenCommand, onRefresh }) {
+export default function Header() {
+  const navItems = [
+    { to: '/', label: 'OVERVIEW', icon: Eye, end: true },
+    { to: '/threats', label: 'THREATS', icon: Shield },
+    { to: '/incidents', label: 'INCIDENTS', icon: ShieldAlert },
+    { to: '/live-fetch', label: 'FETCH', icon: Globe },
+    { to: '/reports', label: 'REPORTS', icon: FileText },
+    { to: '/analytics', label: 'SETTINGS', icon: Settings }
+  ];
+
   return (
     <header className="app-header">
-      {/* Left Brand Mark */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
-        <NavLink to="/" className="brand-mark">
-          <div className="brand-symbol" />
-          <span>THREATCHRONICLE</span>
-          <span className="mono" style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 400 }}>
-            ENGINE v1.0
+      {/* Left Brand Mark with Glowing Red Shield Logo */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexShrink: 0 }}>
+        <NavLink to="/" className="brand-mark" style={{ textDecoration: 'none' }}>
+          <div
+            style={{
+              width: '32px',
+              height: '32px',
+              border: '1.5px solid var(--crimson-accent)',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--crimson-accent)',
+              boxShadow: '0 0 12px var(--crimson-glow)',
+              background: 'rgba(255, 42, 75, 0.08)'
+            }}
+          >
+            <Shield size={18} />
+          </div>
+          <span style={{ fontWeight: 800, fontSize: '0.92rem', color: 'var(--text-white)', letterSpacing: '0.04em' }}>
+            THREATCHRONICLE
           </span>
         </NavLink>
-
-        <div className="mono" style={{ fontSize: '0.68rem', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.04)', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid var(--border-subtle)' }}>
-          SESSION: OPS-2026-001
-        </div>
       </div>
 
-      {/* Center Navigation Tabs */}
+      {/* Top Navbar Header Navigation Group */}
       <nav className="nav-tab-group">
-        <NavLink to="/" end className={({ isActive }) => `nav-tab-link ${isActive ? 'active' : ''}`}>
-          <LayoutDashboard size={14} />
-          <span>DASHBOARD</span>
-        </NavLink>
-
-        <NavLink to="/threats" className={({ isActive }) => `nav-tab-link ${isActive ? 'active' : ''}`}>
-          <Shield size={14} />
-          <span>THREAT QUEUE</span>
-        </NavLink>
-
-        <NavLink to="/live-fetch" className={({ isActive }) => `nav-tab-link ${isActive ? 'active' : ''}`}>
-          <Globe size={14} />
-          <span>LIVE FETCH</span>
-        </NavLink>
-
-        <NavLink to="/analytics" className={({ isActive }) => `nav-tab-link ${isActive ? 'active' : ''}`}>
-          <Cpu size={14} />
-          <span>ANALYTICS</span>
-        </NavLink>
+        {navItems.map((item, idx) => (
+          <NavLink
+            key={idx}
+            to={item.to}
+            end={item.end}
+            className={({ isActive }) => `nav-tab-link ${isActive ? 'active' : ''}`}
+          >
+            <item.icon size={14} />
+            <span>{item.label}</span>
+          </NavLink>
+        ))}
       </nav>
-
-      {/* Right Controls */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexShrink: 0 }}>
-        <button className="cmd-trigger" onClick={onOpenCommand} title="Open Command Palette (⌘ K)">
-          <Search size={13} />
-          <span>Search command...</span>
-          <span className="kbd">⌘K</span>
-        </button>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--status-clean)' }}></span>
-          <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>OPERATIONAL</span>
-        </div>
-
-        <button
-          onClick={onRefresh}
-          style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-          title="Refresh Engine Metrics"
-        >
-          <RefreshCw size={14} />
-        </button>
-      </div>
     </header>
   );
 }

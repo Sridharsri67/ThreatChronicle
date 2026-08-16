@@ -7,7 +7,7 @@ export default function SidebarNav() {
     { to: '/', label: 'Overview', icon: Eye },
     { to: '/threats', label: 'Threats', icon: Shield },
     { to: '/incidents', label: 'Incidents', icon: ShieldAlert },
-    { to: '/live-fetch', label: 'Intelligence', icon: Globe },
+    { to: '/live-fetch', label: 'Fetch', icon: Globe },
     { to: '/reports', label: 'Reports', icon: FileText },
     { to: '/analytics', label: 'Settings', icon: Settings }
   ];

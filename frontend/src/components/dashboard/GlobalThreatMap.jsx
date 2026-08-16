@@ -32,7 +32,7 @@ export default function GlobalThreatMap() {
       color: 'rgba(255, 255, 255, 0.28)',
       shape: 'circle',
       backgroundColor: '#050508'
-    });
+    }).replace('<svg ', '<svg preserveAspectRatio="none" style="width:100%;height:100%;display:block;" ');
 
     return { svgMap: svg, points: projectedArcs };
   }, []);

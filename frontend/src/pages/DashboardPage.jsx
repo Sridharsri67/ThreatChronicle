@@ -1,14 +1,14 @@
 import React from 'react';
-import { Shield, Activity, Lock, AlertTriangle, ShieldCheck, ChevronDown, Maximize2, Grid, MoreHorizontal } from 'lucide-react';
+import { Shield, ChevronDown, Maximize2, Grid, MoreHorizontal } from 'lucide-react';
 import GlobalThreatMap from '../components/dashboard/GlobalThreatMap';
 import ThreatSeverityWidget from '../components/dashboard/ThreatSeverityWidget';
 import AiDetectionWidget from '../components/dashboard/AiDetectionWidget';
 import NetworkStatusWidget from '../components/dashboard/NetworkStatusWidget';
 import AttackVectorsWidget from '../components/dashboard/AttackVectorsWidget';
 import LiveAttackFeedWidget from '../components/dashboard/LiveAttackFeedWidget';
-import CriticalAlertBanner from '../components/dashboard/CriticalAlertBanner';
+import ThreatSearchPill from '../components/common/ThreatSearchPill';
 
-export default function DashboardPage({ threats, metrics }) {
+export default function DashboardPage({ threats, metrics, onRefreshData }) {
   const realThreats = threats || [];
 
   const activeIncidents = metrics ? (metrics.totalThreats || realThreats.length) : realThreats.length;
@@ -17,14 +17,19 @@ export default function DashboardPage({ threats, metrics }) {
 
   return (
     <div className="dashboard-grid-canvas">
-      {/* Top Header Controls Bar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div className="soc-header-title">
+      {/* Top Header Controls & Threat Search Pill */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+        <div className="soc-header-title" style={{ flexShrink: 0 }}>
           <Shield size={20} style={{ color: 'var(--crimson-accent)' }} />
           <span>Threat Intelligence Overview</span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        {/* Floating Search Pill Bar */}
+        <div style={{ flex: 1, margin: '0 0.5rem' }}>
+          <ThreatSearchPill threats={realThreats} onRefreshData={onRefreshData} />
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
           {/* Time Range Dropdown */}
           <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', borderRadius: '6px', padding: '0.35rem 0.75rem', fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
             <span>Last 24 Hours</span>
@@ -155,9 +160,6 @@ export default function DashboardPage({ threats, metrics }) {
         {/* Live Attack Feed */}
         <LiveAttackFeedWidget threats={realThreats} />
       </div>
-
-      {/* Critical Alert Floating Banner */}
-      <CriticalAlertBanner threatId={realThreats.length > 0 ? realThreats[0].threatId : '203.0.113.45'} />
     </div>
   );
 }
